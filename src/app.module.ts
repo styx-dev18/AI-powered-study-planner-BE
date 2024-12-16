@@ -28,9 +28,9 @@ import { PromptModule } from './prompt/prompt.module';
         entities: [User, Task],
         synchronize: true,
         logging: true,
-        // ssl: {
-        //   rejectUnauthorized: false,
-        // },
+        ssl: {
+          rejectUnauthorized: false,
+        },
       }),
     }),
     UserModule,
