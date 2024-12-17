@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { CreateUserDto } from 'src/user/dto/create-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -37,7 +38,7 @@ export class AuthService {
         };
     }
 
-    googleLogin(req) {
+    async googleLogin(req) {
         if (!req.user) {
             throw new UnauthorizedException('No user from google');
         }
@@ -46,13 +47,29 @@ export class AuthService {
             email: req.user.email,
             username: req.user.firstName + ' ' + req.user.lastName,
         };
-    
-        return this.jwtService.signAsync(payload, { expiresIn: '60s' }).then((access_token) => {
+
+        const user = await this.usersService.findOne(req.user.email);
+        if(user) {
             return {
-                access_token,
+                userId: user.userId,
+                access_token: await this.jwtService.signAsync(payload),
+                username: user.username,
+                email: user.email
+            };
+        } else {
+            const createUserDTO: CreateUserDto = {
                 username: payload.username,
                 email: payload.email,
-            };
-        });
+                password: await this.jwtService.signAsync(payload),
+            }
+            await this.usersService.createUser(createUserDTO);
+            const createdUser = await this.usersService.findOne(payload.email);
+            return {
+                access_token: await this.jwtService.signAsync(payload),
+                email: createdUser.email,
+                username: createdUser.username,
+                userId: createdUser.userId
+            }
+        }
     }
 }

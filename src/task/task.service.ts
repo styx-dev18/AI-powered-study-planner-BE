@@ -45,7 +45,7 @@ export class TaskService {
             throw new NotFoundException(`User not found`);
         }
         const tasks = await this.taskRepository.find({ where: { createdBy: userId }});
-
+        
         return {
             message: "Retrieve user's tasks successfully",
             statusCode: 200,

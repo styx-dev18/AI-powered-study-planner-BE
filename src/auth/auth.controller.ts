@@ -41,6 +41,6 @@ export class AuthController {
   @UseGuards(AuthGuardPassport('google'))
   async googleAuthRedirect(@Req() req, @Res() res) {
     const response = await this.authService.googleLogin(req)
-    res.redirect(`${process.env.CORS_ORIGIN}/login?username=${response.username}&email=${response.email}&token=${response.access_token}`)
+    res.redirect(`${process.env.CORS_ORIGIN}/login?username=${response.username}&email=${response.email}&token=${response.access_token}&userId=${response.userId}`)
   }
 }
