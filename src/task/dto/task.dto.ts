@@ -13,12 +13,11 @@ export class CreateTaskDto {
     @IsOptional()
     description?: string;
 
+    @IsEnum(['Todo', 'In progress', 'Completed', 'Expired'])
+    status?: 'Todo' | 'In progress' | 'Completed' | 'Expired';
+
     @IsEnum(['High', 'Medium', 'Low'])
     priority: 'High' | 'Medium' | 'Low';
-
-    @IsInt()
-    @IsOptional()
-    estimated_time?: number;
 
     @IsDateString()
     @IsOptional()
@@ -45,10 +44,6 @@ export class UpdateTaskDto {
     @IsEnum(['Todo', 'In Progress', 'Completed', 'Expired'])
     @IsOptional()
     status?: 'Todo' | 'In Progress' | 'Completed' | 'Expired';
-
-    @IsInt()
-    @IsOptional()
-    estimated_time?: number;
 
     @IsDateString()
     @IsOptional()

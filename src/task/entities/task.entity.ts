@@ -14,11 +14,8 @@ export class Task {
     @Column({ type: 'enum', enum: ['High', 'Medium', 'Low'] })
     priority: string;
 
-    @Column({ type: 'enum', enum: ['Todo', 'In Progress', 'Completed', 'Expired'], default: 'Todo' })
+    @Column({ type: 'enum', enum: ['Todo', 'In Progress', 'Completed', 'Expired']})
     status: string;
-
-    @Column({ type: 'int', nullable: true })
-    estimated_time: number;
 
     @CreateDateColumn()
     created_at: Date;
