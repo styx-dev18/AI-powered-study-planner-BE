@@ -20,9 +20,7 @@ export class PromptService {
 
     async getPromptResponse(userId: string): Promise<{ message: string, statusCode: number }> {
         try {
-            console.log(userId);
             const user = await this.userRepository.findOneById(userId);
-            console.log(user);
             if (!user) {
                 throw new NotFoundException("User not found.");
             }

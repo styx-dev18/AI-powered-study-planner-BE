@@ -26,10 +26,6 @@ export class TaskService {
         }
     }
 
-    async getTasks(): Promise<Task[]> {
-        return await this.taskRepository.find();
-    }
-
     async getTaskById(id: string): Promise<{message: string, data: Task}> {
         const task = await this.taskRepository.findOne({ where: { id } });
         if (!task) throw new NotFoundException(`Task with ID ${id} not found`);
@@ -41,6 +37,9 @@ export class TaskService {
     }
 
     async getTasksByUser(userId: string): Promise<{ message: string; statusCode: number; data: Task[] }> {
+        if(!userId) {
+            throw new NotFoundException(`User not found`);
+        }
         const user = await this.userRepository.findOne({where: {userId: userId}});
         if(!user) {
             throw new NotFoundException(`User not found`);

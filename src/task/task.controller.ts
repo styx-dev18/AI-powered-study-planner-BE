@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe, Query } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { CreateTaskDto, UpdateTaskDto } from './dto/task.dto';
 
@@ -10,9 +10,9 @@ export class TaskController {
     async createTask(@Body() createTaskDto: CreateTaskDto) {
         return await this.taskService.createTask(createTaskDto);
     }
-
+    
     @Get()
-    async getTasksByUser(@Body('userId') userId: string) {
+    async getTasksByUser(@Query('userId') userId: string) {
         return await this.taskService.getTasksByUser(userId);
     }
 
