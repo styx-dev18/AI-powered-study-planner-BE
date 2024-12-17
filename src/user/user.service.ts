@@ -43,4 +43,9 @@ export class UserService {
     const existingUser = await this.userRepository.findOne({ where: { email } });
     return existingUser; 
   }
+
+  async findOneById(userId: string) : Promise<User>{
+    const existingUser = await this.userRepository.findOne({ where: { userId } });
+    return existingUser; 
+  }
 }

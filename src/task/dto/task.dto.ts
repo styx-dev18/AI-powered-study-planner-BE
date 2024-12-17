@@ -13,8 +13,8 @@ export class CreateTaskDto {
     @IsOptional()
     description?: string;
 
-    @IsEnum(['Todo', 'In progress', 'Completed', 'Expired'])
-    status?: 'Todo' | 'In progress' | 'Completed' | 'Expired';
+    @IsEnum(['Todo', 'In Progress', 'Completed', 'Expired'])
+    status?: 'Todo' | 'In Progress' | 'Completed' | 'Expired';
 
     @IsEnum(['High', 'Medium', 'Low'])
     priority: 'High' | 'Medium' | 'Low';

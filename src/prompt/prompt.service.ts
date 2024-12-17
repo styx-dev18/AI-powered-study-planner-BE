@@ -20,7 +20,9 @@ export class PromptService {
 
     async getPromptResponse(userId: string): Promise<{message: string, statusCode: number}> {
         try{
-            const user = await this.userRepository.findOne(userId);
+            console.log(userId);
+            const user = await this.userRepository.findOneById(userId);
+            console.log(user);
             if(!user){
                 throw new NotFoundException("User not found.");
             }
@@ -33,7 +35,7 @@ export class PromptService {
                     statusCode: 200,
                 }
             }
-            const prompt = "Analyze the following task schedule and provide feedback on potential improvements. Specifically, consider: Warning about overly tight schedules that may lead to user burnout, especially on days with a high task load. Suggest ways to redistribute tasks across dates for a healthier balance. Recommending prioritization changes to improve focus and balance, such as reorganizing tasks to address high-priority items earlier or deferring lower-priority tasks. Highlighting risks of inefficiencies or unmanageable workloads and providing actionable suggestions to optimize the schedule. Here is the schedule data:";
+            const prompt = "Analyze (and display with beautiful format in markdown with no table) the following task schedule and provide feedback on potential improvements. Specifically, consider: Warning about overly tight schedules that may lead to user burnout, especially on days with a high task load. Suggest ways to redistribute tasks across dates for a healthier balance. Recommending prioritization changes to improve focus and balance, such as reorganizing tasks to address high-priority items earlier or deferring lower-priority tasks. Highlighting risks of inefficiencies or unmanageable workloads and providing actionable suggestions to optimize the schedule. Here is the schedule data:";
             const result = await this.genAIModel.generateContent(`${prompt} ${JSON.stringify(tasks)}`);
             const response = await result.response;
             const text = response.text();
