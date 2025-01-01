@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Task } from './entities/task.entity';
+import { Task } from '../entities/task.entity';
 import { CreateTaskDto, UpdateTaskDto } from './dto/task.dto';
-import { User } from '../user/entities/user.entity'
+import { User } from '../entities/user.entity'
 
 @Injectable()
 export class TaskService {
@@ -16,7 +16,7 @@ export class TaskService {
 
     async createTask(createTaskDto: CreateTaskDto): Promise<{ message: string; statusCode: number; data: Task }> {
         const { userId, ...taskData } = createTaskDto;
-        const task = this.taskRepository.create({createdBy: userId, ...taskData});
+        const task = this.taskRepository.create({ createdBy: userId, ...taskData });
         const createdTask = await this.taskRepository.save(task);
 
         return {
@@ -26,7 +26,7 @@ export class TaskService {
         }
     }
 
-    async getTaskById(id: string): Promise<{message: string, data: Task}> {
+    async getTaskById(id: string): Promise<{ message: string, data: Task }> {
         const task = await this.taskRepository.findOne({ where: { id } });
         if (!task) throw new NotFoundException(`Task with ID ${id} not found`);
 
@@ -37,15 +37,15 @@ export class TaskService {
     }
 
     async getTasksByUser(userId: string): Promise<{ message: string; statusCode: number; data: Task[] }> {
-        if(!userId) {
+        if (!userId) {
             throw new NotFoundException(`User not found`);
         }
-        const user = await this.userRepository.findOne({where: {userId: userId}});
-        if(!user) {
+        const user = await this.userRepository.findOne({ where: { userId: userId } });
+        if (!user) {
             throw new NotFoundException(`User not found`);
         }
-        const tasks = await this.taskRepository.find({ where: { createdBy: userId }});
-        
+        const tasks = await this.taskRepository.find({ where: { createdBy: userId } });
+
         return {
             message: "Retrieve user's tasks successfully",
             statusCode: 200,
@@ -66,10 +66,10 @@ export class TaskService {
         };
     }
 
-    async deleteTask(id: string): Promise<{message: string, statusCode: number}> {
+    async deleteTask(id: string): Promise<{ message: string, statusCode: number }> {
         const result = await this.taskRepository.delete(id);
         if (result.affected === 0) throw new NotFoundException(`Task with ID ${id} not found`);
-        
+
         return {
             message: `Task with ID ${id} deleted successfully`,
             statusCode: 200,

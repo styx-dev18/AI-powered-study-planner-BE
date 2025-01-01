@@ -4,13 +4,15 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
-import { User } from './user/entities/user.entity';
+import { User } from './entities/user.entity';
 import { AuthModule } from './auth/auth.module';
 import { TaskModule } from './task/task.module';
-import { Task } from './task/entities/task.entity';
+import { Task } from './entities/task.entity';
 import { PromptController } from './prompt/prompt.controller';
 import { PromptService } from './prompt/prompt.service';
 import { PromptModule } from './prompt/prompt.module';
+import { FocusedTimeModule } from './focused_time/focused_time.module';
+import { FocusedTime } from './entities/focused-time.entity';
 
 @Module({
   imports: [
@@ -25,18 +27,19 @@ import { PromptModule } from './prompt/prompt.module';
         username: configService.get<string>('DATABASE_USER'),
         password: configService.get<string>('DATABASE_PASSWORD'),
         database: configService.get<string>('DATABASE_NAME'),
-        entities: [User, Task],
+        entities: [User, Task, FocusedTime],
         synchronize: true,
         logging: true,
-        ssl: {
-          rejectUnauthorized: false,
-        },
+        // ssl: {
+        //   rejectUnauthorized: false,
+        // },
       }),
     }),
     UserModule,
     AuthModule,
     TaskModule,
-    PromptModule
+    PromptModule,
+    FocusedTimeModule
   ],
   controllers: [AppController, PromptController],
   providers: [AppService, PromptService],

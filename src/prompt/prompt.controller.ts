@@ -8,6 +8,6 @@ export class PromptController {
     @HttpCode(HttpStatus.OK)
     @Post()
     async getPromptResponse(@Body() body: PromptBody) {
-        return await this.promptService.getPromptResponse(body.userId);
+        return await this.promptService.getPromptResponse(body.data.userId);
     }
 }

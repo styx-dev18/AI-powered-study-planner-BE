@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty, IsOptional, IsString, IsInt, IsDate, IsDateString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString, IsInt, IsDate, IsDateString, IsPositive } from 'class-validator';
 
 export class CreateTaskDto {
     @IsString()
@@ -26,6 +26,10 @@ export class CreateTaskDto {
     @IsDateString()
     @IsOptional()
     dued_at?: Date;
+
+    @IsInt()
+    @IsOptional()
+    estimated_time: number;
 }
 
 export class UpdateTaskDto {
@@ -52,4 +56,8 @@ export class UpdateTaskDto {
     @IsDateString()
     @IsOptional()
     dued_at?: Date;
+
+    @IsInt()
+    @IsOptional()
+    estimated_time: number;
 }

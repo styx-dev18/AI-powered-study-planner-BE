@@ -4,8 +4,8 @@ import { ConfigModule } from '@nestjs/config';
 import { PromptController } from './prompt.controller';
 import { TaskModule } from 'src/task/task.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Task } from 'src/task/entities/task.entity';
-import { User } from 'src/user/entities/user.entity';
+import { Task } from 'src/entities/task.entity';
+import { User } from 'src/entities/user.entity';
 import { UserModule } from 'src/user/user.module';
 
 @Module({
