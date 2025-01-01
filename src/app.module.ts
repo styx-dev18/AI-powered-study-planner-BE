@@ -30,9 +30,9 @@ import { FocusedTime } from './entities/focused-time.entity';
         entities: [User, Task, FocusedTime],
         synchronize: true,
         logging: true,
-        // ssl: {
-        //   rejectUnauthorized: false,
-        // },
+        ssl: {
+          rejectUnauthorized: false,
+        },
       }),
     }),
     UserModule,
