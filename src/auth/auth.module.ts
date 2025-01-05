@@ -1,29 +1,29 @@
-import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
+import { forwardRef, MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UserModule } from '../user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthGuard } from './auth.guard';
-import { JwtAuthMiddleware } from './auth.middleware';
+import { AuthMiddleware } from './auth.middleware';
 import { GoogleStrategy } from './google.strategy';
 import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
-    UserModule,
+    forwardRef(() => UserModule),
     ConfigModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: '60s' },
+        signOptions: { expiresIn: '3600s' },
       }),
     }),
     PassportModule
   ],
-  providers: [AuthService, AuthGuard, JwtAuthMiddleware, GoogleStrategy],
+  providers: [AuthService, AuthGuard, AuthMiddleware, GoogleStrategy],
   controllers: [AuthController],
   exports: [AuthService],
 })
@@ -31,7 +31,7 @@ import { PassportModule } from '@nestjs/passport';
 export class AuthModule {
   // configure(consumer: MiddlewareConsumer) {
   //   consumer
-  //     .apply(JwtAuthMiddleware)
-  //     .forRoutes({ path: 'profile', method: RequestMethod.GET });
+  //     .apply(AuthMiddleware)
+  //     .forRoutes({ path: '*', method: RequestMethod.ALL });
   // }
 }

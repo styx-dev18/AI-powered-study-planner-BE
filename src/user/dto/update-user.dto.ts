@@ -1,22 +1,32 @@
 import {
     IsAlphanumeric,
     IsEmail,
-    IsEnum,
-    IsInt,
     IsNotEmpty,
-    Matches,
     IsOptional,
     IsString,
+    Matches,
 } from 'class-validator';
 
 const passwordRegEx = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
 
-export class CreateUserDto {
+export class UpdateUserDto {
+    @IsNotEmpty()
+    id: string;
+
     @IsNotEmpty()
     username: string;
 
     @IsEmail({}, { message: 'Please provide a valid email.' })
     email: string;
+
+    @IsOptional()
+    @IsString()
+    imageUrl: string;
+}
+
+export class UpdatePasswordDto {
+    @IsNotEmpty()
+    userId: string;
 
     @IsNotEmpty()
     @Matches(passwordRegEx, {
@@ -24,7 +34,6 @@ export class CreateUserDto {
     })
     password: string;
 
-    @IsOptional()
-    @IsString()
-    imageUrl?: string;
+    @IsNotEmpty()
+    token: string;
 }

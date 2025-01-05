@@ -3,7 +3,7 @@ import { JwtService, TokenExpiredError } from '@nestjs/jwt';
 import e, { Request, Response, NextFunction } from 'express';
 
 @Injectable()
-export class JwtAuthMiddleware implements NestMiddleware {
+export class AuthMiddleware implements NestMiddleware {
   constructor(private readonly jwtService: JwtService) {}
 
   use(req: Request, res: Response, next: NextFunction) {
@@ -20,7 +20,6 @@ export class JwtAuthMiddleware implements NestMiddleware {
       req.user = decodedToken;
       next();
     } catch (error) {
-      // console.log(error);
       if (error instanceof TokenExpiredError) {
         throw new UnauthorizedException('Token has expired');
       }

@@ -9,7 +9,7 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   userId: string;
 
-  @Column({ type: 'varchar', length: 30, unique: true })
+  @Column({ type: 'varchar', length: 30 })
   username: string;
 
   @Column({ type: 'varchar', length: 40, unique: true })
@@ -20,4 +20,13 @@ export class User {
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
+
+  @Column({type: 'varchar', nullable: true})
+  imageUrl: string;
+
+  @Column({type: 'boolean', default: false})
+  isVerified: boolean;
+
+  @Column({ nullable: true })
+  resetPasswordToken: string;
 }

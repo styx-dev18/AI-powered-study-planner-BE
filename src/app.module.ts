@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
@@ -13,10 +13,13 @@ import { PromptService } from './prompt/prompt.service';
 import { PromptModule } from './prompt/prompt.module';
 import { FocusedTimeModule } from './focused_time/focused_time.module';
 import { FocusedTime } from './entities/focused-time.entity';
+import { MailModule } from './mail/mail.module';
+import { Token } from './entities/token.entity';
+
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({ isGlobal: true, }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -27,19 +30,20 @@ import { FocusedTime } from './entities/focused-time.entity';
         username: configService.get<string>('DATABASE_USER'),
         password: configService.get<string>('DATABASE_PASSWORD'),
         database: configService.get<string>('DATABASE_NAME'),
-        entities: [User, Task, FocusedTime],
+        entities: [User, Task, FocusedTime, Token],
         synchronize: true,
         logging: true,
-        // ssl: {
-        //   rejectUnauthorized: false,
-        // },
+        ssl: {
+          rejectUnauthorized: false,
+        },
       }),
     }),
-    UserModule,
+    forwardRef(() => UserModule),
     AuthModule,
     TaskModule,
     PromptModule,
-    FocusedTimeModule
+    FocusedTimeModule,
+    forwardRef(() => MailModule)
   ],
   controllers: [AppController, PromptController],
   providers: [AppService, PromptService],

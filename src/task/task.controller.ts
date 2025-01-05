@@ -30,4 +30,18 @@ export class TaskController {
     async deleteTask(@Param('id') id: string) {
         return await this.taskService.deleteTask(id);
     }
+
+    @Get('status-count/:userId')
+    async getTaskStatusCount(@Param('userId') userId: string) {
+        return await this.taskService.getTaskStatusCount(userId);
+    }
+    @Get('focused-time-count/:userId')
+    async getTaskFocusedTimeByDate(@Param('userId') userId: string) {
+        return await this.taskService.getTaskFocusedTimeByDate(userId);
+    }
+
+    @Get('focused-time-count-7-days/:userId')
+    async getTaskFocusedTime7days(@Param('userId') userId: string) {
+        return await this.taskService.getTaskFocusedTime7days(userId);
+    }
 }
