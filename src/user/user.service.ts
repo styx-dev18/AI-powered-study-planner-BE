@@ -1,4 +1,12 @@
-import { Injectable, ConflictException, InternalServerErrorException, UnauthorizedException, NotFoundException, Inject, forwardRef } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  InternalServerErrorException,
+  UnauthorizedException,
+  NotFoundException,
+  Inject,
+  forwardRef,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -6,7 +14,6 @@ import { User } from '../entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto, UpdateUserDto } from './dto/update-user.dto';
 import { SendMailUseCase } from 'src/mail/core/usecases/send_mail.usecase';
-import { MailSubject } from 'src/mail/core/enums/subject';
 import { AuthService } from 'src/auth/auth.service';
 import { Token } from '../entities/token.entity';
 import { TokenPurpose } from '../entities/token.entity';
@@ -21,9 +28,11 @@ export class UserService {
     private readonly sendMailUsecase: SendMailUseCase,
     @Inject(forwardRef(() => AuthService))
     private readonly authService: AuthService,
-  ) { }
+  ) {}
 
-  async updateUser(updateUserDto: UpdateUserDto): Promise<{ message: string, data: User }> {
+  async updateUser(
+    updateUserDto: UpdateUserDto,
+  ): Promise<{ message: string; data: User }> {
     const { email } = updateUserDto;
     const { id, ...payload } = updateUserDto;
     const existingUser = await this.findOne(email);
@@ -39,11 +48,13 @@ export class UserService {
 
     return {
       message: 'Account is updated successfully.',
-      data: updatedUser
-    }
+      data: updatedUser,
+    };
   }
 
-  async updatePassword(updatePasswordDto: UpdatePasswordDto): Promise<{ message: string }> {
+  async updatePassword(
+    updatePasswordDto: UpdatePasswordDto,
+  ): Promise<{ message: string }> {
     const { userId, password, token } = updatePasswordDto;
     const user = await this.findOneById(userId);
 
@@ -52,8 +63,8 @@ export class UserService {
       where: {
         userId,
         token,
-        purpose: TokenPurpose.RESET_PASSWORD
-      }
+        purpose: TokenPurpose.RESET_PASSWORD,
+      },
     });
 
     if (!tokenRecord) {
@@ -73,14 +84,16 @@ export class UserService {
     await this.tokenRepository.remove(tokenRecord);
 
     return {
-      message: 'Password updated successfully.'
-    }
+      message: 'Password updated successfully.',
+    };
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<{ message: string }> {
     const { username, email, password, imageUrl } = createUserDto;
 
-    const existingUser = await this.userRepository.findOne({ where: { email } });
+    const existingUser = await this.userRepository.findOne({
+      where: { email },
+    });
     if (existingUser) {
       throw new ConflictException('Email already exists.');
     }
@@ -88,11 +101,18 @@ export class UserService {
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const user = this.userRepository.create({ username, email, password: hashedPassword, imageUrl });
+    const user = this.userRepository.create({
+      username,
+      email,
+      password: hashedPassword,
+      imageUrl,
+    });
 
     try {
       const savedUser = await this.userRepository.save(user);
-      const token = this.authService.generateVerificationToken(savedUser.userId);
+      const token = this.authService.generateVerificationToken(
+        savedUser.userId,
+      );
       const verificationLink = `${process.env.CORS_ORIGIN}/verify-email?token=${token}`;
 
       // Store verification token
@@ -100,16 +120,20 @@ export class UserService {
         userId: savedUser.userId,
         token,
         purpose: TokenPurpose.VERIFY_EMAIL,
-        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
       });
 
-      await this.sendMailUsecase.execute(user.email, {
-        subject: MailSubject.VERIFY_EMAIL,
-        templateName: 'verify_email'
-      }, {
-        displayName: user.username,
-        verificationLink: verificationLink
-      });
+      await this.sendMailUsecase.execute(
+        user.email,
+        {
+          subject: 'Email Verification',
+          templateName: 'verify_email',
+        },
+        {
+          displayName: user.username,
+          verificationLink: verificationLink,
+        },
+      );
       return { message: 'User created successfully!' };
     } catch (error) {
       throw new InternalServerErrorException('Failed to create user.');
@@ -121,8 +145,8 @@ export class UserService {
     const tokenRecord = await this.tokenRepository.findOne({
       where: {
         token,
-        purpose: TokenPurpose.VERIFY_EMAIL
-      }
+        purpose: TokenPurpose.VERIFY_EMAIL,
+      },
     });
 
     if (!tokenRecord) {
@@ -141,18 +165,22 @@ export class UserService {
 
     user.isVerified = true;
     await this.userRepository.save(user);
-    
+
     // Remove the used token
     await this.tokenRepository.remove(tokenRecord);
   }
 
   async findOne(email: string): Promise<User> {
-    const existingUser = await this.userRepository.findOne({ where: { email } });
+    const existingUser = await this.userRepository.findOne({
+      where: { email },
+    });
     return existingUser;
   }
 
   async findOneById(userId: string): Promise<User> {
-    const existingUser = await this.userRepository.findOne({ where: { userId } });
+    const existingUser = await this.userRepository.findOne({
+      where: { userId },
+    });
     return existingUser;
   }
 
@@ -167,7 +195,7 @@ export class UserService {
       // Clear any existing reset tokens for this user
       await this.tokenRepository.delete({
         userId: user.userId,
-        purpose: TokenPurpose.RESET_PASSWORD
+        purpose: TokenPurpose.RESET_PASSWORD,
       });
 
       const token = this.authService.generateVerificationToken(user.userId);
@@ -178,21 +206,27 @@ export class UserService {
         userId: user.userId,
         token,
         purpose: TokenPurpose.RESET_PASSWORD,
-        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
       });
 
-      await this.sendMailUsecase.execute(user.email, {
-        subject: MailSubject.FORGOT_PASSWORD,
-        templateName: 'forgot_password',
-      }, {
-        displayName: user.username,
-        resetPasswordLink: resetLink,
-      });
+      await this.sendMailUsecase.execute(
+        user.email,
+        {
+          subject: 'Forgot Password',
+          templateName: 'forgot_password',
+        },
+        {
+          displayName: user.username,
+          resetPasswordLink: resetLink,
+        },
+      );
 
       return { message: 'Password reset link sent successfully' };
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException('Failed to send password reset link');
+      throw new InternalServerErrorException(
+        'Failed to send password reset link',
+      );
     }
   }
 }
