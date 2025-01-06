@@ -5,3 +5,8 @@ export interface PromptBody {
 export interface PromptData {
     userId: string;
 }
+
+export interface PromptByStringBody {
+    userId: string;
+    prompt: string;
+}
